@@ -1,0 +1,45 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+
+#실험 데이터
+weights = np.arange(0, 201, 20)  # 0g에서 200g까지 20g 단위 증가
+balance_points = [15, 18.5, 20.5, 21.9, 22.8, 23.5, 24.1, 24.6, 24.9, 25.9, 26.2]  # 실험 결과
+
+#데이터 시각화
+plt.scatter(weights, balance_points, label="Experimental Data", color="blue")
+plt.xlabel("Weight (g)")
+plt.ylabel("Balance Point (cm)")
+plt.title("Weight vs Balance Point")
+plt.grid()
+plt.legend()
+plt.show()
+
+#모델링 함수: 제곱근 함수 추정
+def model(x, a, b):
+    return a * np.sqrt(x) + b
+
+#최적화로 모델 파라미터 찾기
+params, _ = curve_fit(model, weights, balance_points)
+a, b = params
+
+#모델 결과 시각화
+x_fit = np.linspace(0, 200, 500)
+y_fit = model(x_fit, a, b)
+
+plt.scatter(weights, balance_points, label="Experimental Data", color="blue")
+plt.plot(x_fit, y_fit, label=f"Fitted Model: {a:.2f}√x + {b:.2f}", color="red")
+plt.xlabel("Weight (g)")
+plt.ylabel("Balance Point (cm)")
+plt.title("Weight vs Balance Point with Fitted Model")
+plt.grid()
+plt.legend()
+plt.show()
+
+#특정 무게에서 균형점 예측
+def predict_balance(weight):
+    return model(weight, a, b)
+
+test_weight = 300  #300g에서 균형점 예측
+predicted_point = predict_balance(test_weight)
+print(f"Predicted balance point for {test_weight}g: {predicted_point:.2f}cm")
